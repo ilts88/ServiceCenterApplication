@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Admin News page</title>
+    <link rel="stylesheet" type="text/css" href="/adminpage/admin_frame.css"/>
+    <style>
+        .rules {
+            height: 100%;
+        }
+
+        .text_wrapper {
+            max-height: 70%;
+            overflow: auto;
+            border-bottom: 1px solid grey;
+            padding-left: 3px;
+            background-color: white;
+        }
+
+            .text_wrapper p {
+                margin: revert;
+                padding: revert;
+                border: revert;
+            }
+
+        .selector {
+            margin-left:10%;
+            margin-right:10%;
+            width:80%;
+        }
+            
+        .selector input[type="button"]{
+            float:right;
+            
+        }
+        .selector_wrapper {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 75%;
+            float: left;
+            border-right: 1px solid grey;
+            border-bottom: 1px solid grey;
+        }
+        .createbutton_wrapper {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            width: 25%;
+            margin-left: 75%;
+            border-bottom: 1px solid grey;
+        }
+        .createbutton_wrapper button{
+            width:60%;
+            margin-left:20%;
+        }
+        .editpanel {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            z-index: 1;
+            min-width: 1000px;
+            background-color: white;
+            box-shadow: 5px 5px 50px 5px #808080,-5px -5px 50px 5px #808080;
+        }
+
+            .editpanel div {
+                text-align: center;
+                width: 33%;
+                margin-left: 30%;
+                margin-top: 10px;
+                padding: 3px;
+                border: 3px solid blue;
+            }
+
+            .editpanel button:first-child {
+                margin-left: 35%;
+            }
+
+            .editpanel button {
+                margin: 10px;
+                width: 10%;
+            }
+        .newstable_wrapper {
+            height: 92%;
+            overflow: auto;
+        }
+
+        .newstable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .newstable tr {
+                border-bottom: 2px solid black;
+            }
+
+            .newstable td,th {
+                border-right: 1px solid grey;
+                padding-top: 3px;
+                padding-bottom: 3px;
+            }
+
+                .newstable td:last-of-type {
+                    border-right: none;
+                }
+
+                .newstable th:last-of-type{
+                    border-right: none;
+                }
+
+            .newstable button {
+                margin: 3px;
+                width:75px;
+            }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+        </div>
+    </div>
+    <div class="wrapper">
+    <div class="menubar">
+        <ul class="navigation">
+            <li><a href="/adminpage">Управление запросами</a></li>
+            <li><a href="/adminpage/newspage">Управление новостями</a></li>
+        </ul>
+    </div>
+    <div class="rules">
+        <div class="text_wrapper">
+            <p>Вы находитесь в системе управления новостями. Для того, чтобы сделать новую публикацию, нажмите на кнопку «создать». В открывшемся окне Вы увидите интерфейс для создания новости. Для редактирования уже созданных публикаций Вы можете нажать на кнопку «изменить» напротив нужной публикации. Вы также можете удалить любую публикацию, нажав на кнопку «удалить» напротив нужной публикации.</p>
+            <p>В случае изменений в работе компании (например, во время праздников), необходимо своевременно сделать публикацию об этом, чётко указав изменения. Также нужно публиковать информацию о работе самой системы, и, в случае проведения технических работ, сообщать о периодах, когда система будет недоступна. </p>
+            <p>В этом разделе должны публиковаться ссылки на все финансовые отчёты компании TSY. Рекомендуется также делать публикации о проводимых компанией мероприятиях, а также об участии представителей TSY в форумах, конференциях и т.д.</p>
+        </div>
+    </div>
+    <div class="content">
+
+        <div class="selector_wrapper">
+            <form class="selector" id="selector">
+
+                <span>Сортировать по:</span>
+                <input type="radio" name="order_by" id="ASC" value="ASC" checked />
+                <span>возрастанию</span>
+                <input type="radio" name="order_by" id="DESC" value="DESC" />
+                <span>убыванию</span>
+                <input type="button" value="Применить" id="submitbutton" />
+            </form>
+        </div>
+        <div class="createbutton_wrapper">
+            <button id="createnew">Создать</button>
+        </div>
+        <div class="newstable_wrapper">
+            <table class="newstable">
+                <thead>
+                    <tr>
+                        <th>заголовок</th>
+                        <th>текст статьи</th>
+                        <th>статья создана</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+
+        </div>
+    </div>
+    </div>
+    <script>
+        let current_article = undefined;                             //создание и инициализация переменных текущей открытой публикации и текущего выбранного параметра сортировки
+        let current_order_by_param = "ASC";
+        let submitbutton = document.getElementById("submitbutton");        //получение нужных для дальнейшей работы элементов по id
+        let createnew = document.getElementById("createnew");
+        let tbody = document.getElementById("tbody");
+
+        function GetAllNews(e) {                               //функция для получения всех публикаций
+            while (tbody.firstChild != undefined)
+                tbody.firstChild.remove();                     //очищение таблицы публикаций в случае повторного вызова функции
+
+            let order_by_param = selector.order_by.value;      //получение параметра сортировки, выбранного пользователем
+            current_order_by_param = order_by_param;
+            
+
+            fetch("/adminpage/getallnews?order_by=" + order_by_param, { method: "GET", headers: { "Accept": "application/json" } })      //отправка запроса серверу на получение публикаций с указанными пользователем параметрами сортировки
+                .then(response => {
+                    if (response.ok)
+                        return response.json();
+                    else
+                        return response.json().then(errormessage => { throw errormessage; });
+                })
+                .then(result => {
+                    for (article of result) {              //каждая полученная публикация добавляется в таблицу
+                        let tr = CreateRow(article);       //вызов функции создания элемента строки на основе публикации
+                        tbody.appendChild(tr);             //добавление созданного элемента в таблицу
+                    }
+                        
+                })
+                .catch(error => {
+                    alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);     //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                })
+        }
+        function CreateRow(article) {                   //функция создания элемента строки на основе публикации
+            let tr = document.createElement("tr");      //создание элемента строки
+            tr.setAttribute("id", article.id);          //задание для строки id для дальнейшей работы с создаваемой публикацией
+            let td1 = document.createElement("td");     //создание ячеек строки
+            let td2 = document.createElement("td");
+            let td3 = document.createElement("td");
+
+            td1.textContent = GetTableTitle(article.title);            //вставка данных публикации в ячейки строки
+            td2.textContent = GetTableContent(article.content);
+            td3.textContent = article.created_at;
+
+            tr.appendChild(td1);                                       //добавление ячеек в строку таблицы
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+
+            let openbutton = document.createElement("button");                       //создание кнопки открытия публикации и добавление функции открытия публикации по id
+            openbutton.addEventListener("click", () => OpenElement(article.id));
+            openbutton.textContent = "изменить";
+
+            let deletebutton = document.createElement("button");                         //создание кнопки удаления публикации и добавление функции удаления публикации по id 
+            deletebutton.addEventListener("click", () => DeleteArticle(article.id));
+            deletebutton.textContent = "удалить";
+
+            tr.appendChild(openbutton);
+            tr.appendChild(deletebutton);
+
+            return tr;
+        }
+        function CreateEditPanel() {                               //функция создания панели редактирования публикации
+            let EditPanel = document.createElement("div");
+            EditPanel.setAttribute("id", "editpanel");             //создание элемента панели редактирования публикации и присвоение ему соответствующих id и class
+            EditPanel.setAttribute("class", "editpanel");
+            
+            let form = document.createElement("form");             //создание внутренних элементов панели редактирования публикации
+
+            let h3_1 = document.createElement("h3");
+            let f_p1 = document.createElement("p");
+            let textarea1 = document.createElement("textarea");
+
+            let h3_2 = document.createElement("h3");
+            let f_p2 = document.createElement("p");
+            let textarea2 = document.createElement("textarea");
+
+            let f_p3 = document.createElement("p");
+            let save_button = document.createElement("button");
+            let reset_button = document.createElement("button");
+
+            let div1 = document.createElement("div");
+            let div2 = document.createElement("div");
+
+            form.setAttribute("id", "editform");                //установка id для интерфейса изменения публикации
+
+            h3_1.textContent = "Заголовок: ";                   //создание надписей и установка атрибутов для элементов интерфейса изменения публикации
+
+            h3_2.textContent = "Текст новости: ";
+            
+            textarea1.setAttribute("name", "article_title");
+            textarea1.setAttribute("rows", "3");
+            textarea1.setAttribute("cols", "30");
+            textarea1.setAttribute("maxlength", "80");
+            textarea1.setAttribute("required", "");
+
+            textarea2.setAttribute("name", "content");
+            textarea2.setAttribute("rows", "15");
+            textarea2.setAttribute("cols", "30");
+            textarea2.setAttribute("maxlength", "800");
+            textarea2.setAttribute("required", "");
+
+            save_button.textContent = "Сохранить";
+            reset_button.textContent = "Сбросить";
+
+            if (current_article === undefined)                            //если переменная текущей открытой публикации не определена, к кнопке "сохранить" добавляется функция создания новой публикации
+                save_button.addEventListener("click", CreateArticle);
+            else {                                                        //иначе в поля изменения заголовка и содержания публикации вставляется заголовок и содержание текущей открытой публикации
+                textarea1.value = current_article.title;
+                textarea2.value = current_article.content;
+                save_button.addEventListener("click", UpdateArticle);     //к кнопке "сохранить" добавляется функция обновления публикации
+            }
+ 
+            reset_button.addEventListener("click", ResetChanges);         //к кнопке "сбросить" добавляется функция сброса изменений
+
+            f_p1.appendChild(textarea1);                              //добавление всех созданных элементов в панель редактирования публикации
+            f_p2.appendChild(textarea2);
+            f_p3.appendChild(save_button);
+            f_p3.appendChild(reset_button);
+
+            div1.appendChild(h3_1);
+            div1.appendChild(f_p1);
+            
+            div2.appendChild(h3_2);
+            div2.appendChild(f_p2);
+
+            form.appendChild(div1);
+            form.appendChild(div2);
+            form.appendChild(f_p3);
+
+
+            EditPanel.appendChild(form);
+            document.body.appendChild(EditPanel);                    //добавление панели редактирования публикации на страницу
+        }
+        function CreateArticle(e) {                                  //функция создания новой публикации
+            e.preventDefault();
+            let editform = document.getElementById("editform");       //получение по id элемента интерфейса изменения публикации
+
+            if (editform.checkValidity()) {                        //проверка правильности заполнения формы интерфейса
+                let title = editform.article_title.value;
+                let content = editform.content.value;              //получение введённого заголовка и текста публикации
+                let article = {
+                    id:0,
+                    title,                                         //создание объекта публикации
+                    content,
+                    created_at: new Date()
+                }
+                fetch("/adminpage/createarticle", { method: "POST", body: JSON.stringify(article), headers: { "Accept": "application/json", "Content-type": "application/json" } })             //отправка созданной публикации на сервер
+                    .then(response => {
+                        if (response.ok)
+                            return response.json();
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result => {                          //в случае успешного выполнения запроса сервер возвращает созданную публикацию
+                        
+                        let tr = CreateRow(result);                  //создание элемента строки на основе полученной публикации
+                        if (current_order_by_param === "ASC")
+                            tbody.appendChild(tr);                       //если выбрана сортировка публикаций по возрастанию, созданная публикация добавляется в конец таблицы публикаций
+                        else if (current_order_by_param==="DESC")
+                        {
+                            let firstChild = tbody.firstChild;
+                            if (firstChild != undefined) {
+                                tbody.insertBefore(tr, firstChild)          //если выбрана сортировка публикаций по убыванию, при этом таблица публикаций уже содержит публикации, созданная публикация добавляется в начало таблицы
+                            }
+                            else {
+                                tbody.appendChild(tr);                  //если выбрана сортировка публикаций по убыванию, при этом таблица публикаций не содержит публикации, созданная публикация добавляется в конец таблицы
+                            }
+                        }
+                        
+                        let editpanel = document.getElementById("editpanel");           //получение по id элемента панели редактирования публикации и его удаление
+                        document.body.removeChild(editpanel);
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);           //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                    })
+            }
+            else {
+                editform.reportValidity();                   //вывод пользователю сообщения о неправильно заполненной форме интерфейса
+            }
+        }
+        function ResetChanges(e) {                           //функция сброса изменений, сделанных в панели редактирования публикации
+            e.preventDefault();
+            current_article = undefined;                                   //сбрасывание переменной текущей открытой публикации
+            let editpanel = document.getElementById("editpanel");
+            document.body.removeChild(editpanel);                          //получение по id элемента панели редактирования публикации и его удаление
+        }
+        function OpenElement(id) {                                          //функция для открытия публикации по id
+            fetch("/adminpage/getarticlebyid?id=" + id, { method: "GET", headers: { "Accept": "application/json" } })       //отправка запроса серверу для получения публикации с выбранным id
+                .then(response => {
+                    if (response.ok)
+                        return response.json();
+                    else
+                        return response.json().then(errormessage => { throw errormessage; });
+                })
+                .then(result => {
+                    current_article = result;                    //присвоение переменной текущей открытой публикации данных полученной публикации для дальнейшей работы
+                    CreateEditPanel();                           //вызов функции создания панели редактирования публикации
+                })
+                .catch(error => {
+                    alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);            //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                })
+        }
+        function UpdateArticle(e) {                             //функция обновления публикации
+            e.preventDefault();
+            let editform = document.getElementById("editform");        //получение по id элемента интерфейса изменения публикации
+
+            if (editform.checkValidity()) {                            //проверка правильности заполнения формы интерфейса
+                let title = editform.article_title.value;
+                let content = editform.content.value;                  //получение введённого заголовка и текста публикации
+
+                current_article.title = title;                         //присвоение свойствам объекта текущей открытой публикации новых значений заголовка и текста публикации
+                current_article.content = content;
+
+                fetch("/adminpage/updatearticle", { method: "PUT", body: JSON.stringify(current_article), headers: { "Accept": "application/json", "Content-type": "application/json" } })          //отправка серверу запроса на обновление публикации с данными текущей открытой публикации
+                    .then(response => {
+                        if (response.ok)
+                            return response.json();
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result => {                                              //в случае успешного выполнения запроса сервер возвращает данные обновлённой публикации
+                        let article = document.getElementById(result.id);          //получение по id элемента строки обновлённой публикации
+                        let td1 = article.getElementsByTagName("td")[0];           //получение по имени тега и порядковому номеру ячеек заголовка и текста публикации
+                        let td2 = article.getElementsByTagName("td")[1];
+
+                        td1.textContent = GetTableTitle(result.title);             //вставка данных обновлённой публикации в ячейки строки
+                        td2.textContent = GetTableContent(result.content);
+
+                        current_article = undefined;                               //сбрасывание переменной текущей открытой публикации
+                        let editpanel = document.getElementById("editpanel");
+                        document.body.removeChild(editpanel);                      //получение по id элемента панели редактирования публикации и его удаление
+
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);         //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                    })
+            }
+            else {
+                editform.reportValidity();                    //вывод пользователю сообщения о неправильно заполненной форме интерфейса
+            }
+        }
+        function DeleteArticle(id) {                                                    //функция удаления публикации по id
+            const confirmation = confirm("Вы уверены, что хотите удалить новость?");      //вывод пользователю сообщения с вопросом об удалении публикации и получение от пользователя подтверждения или отказа
+            if (confirmation === true) {                                                  //в случае подтверждения выполняется удаление
+                fetch("/adminpage/deletearticle?id=" + id, { method: "DELETE", headers: { "Accept": "application/json" } })          //отправка серверу запроса на удаление публикации с указанным id
+                    .then(response => {
+                        if (response.ok)
+                            return response.json();
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result_id => {                                       //в случае успешного удаления сервер передаёт id удалённой публикации
+                   
+                        let article = document.getElementById(result_id);      //получение по id элемента строки удалённой публикации
+                        tbody.removeChild(article);                            //удаление публикации из таблицы
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);       //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                    })
+            }
+
+        }
+        function GetTableTitle(title) {                      //функция форматирования заголовка публикации для помещения в таблицу
+            if (title.length > 25)
+                return title.substring(0, 24) + "...";       //у заголовка публикации большая допустимая длина, поэтому в таблицу помещается только начало заголовка, а остальная его часть усекается
+            else
+                return title;
+        }
+        function GetTableContent(content) {                  //функция форматирования текста публикации для помещения в таблицу
+            if (content.length > 75)
+                return content.substring(0, 74) + "...";     //у текста публикации большая допустимая длина, поэтому в таблицу помещается только начало текста, а остальная его часть усекается
+            else
+                return content;
+        }
+        submitbutton.addEventListener("click", GetAllNews);          //добавление к кнопке "применить" функции получения всех публикаций
+        createnew.addEventListener("click", CreateEditPanel);        //добавление к кнопке "создать" функции создания панели редактирования публикации
+        GetAllNews();                                                //вызов функции получения всех публикаций для отображения публикаций пользователю в момент перехода на данную страницу
+    </script>
+</body>
+</html>

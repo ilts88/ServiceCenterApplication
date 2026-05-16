@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Request page</title>
+    <link rel="stylesheet" type="text/css" href="frame.css" />
+    <link rel="stylesheet" type="text/css" href="warranty_promotion_animation.css" />
+    <style>
+        .content h2, form, p {
+            margin: revert;
+            padding: revert;
+            border: revert;
+        }
+
+        .content h2{
+            text-align:center;
+        }
+
+        .requestform input, textarea {
+            float: right;
+            width: 65%;
+            margin-right: 15%;
+        }
+
+        .requestform button {
+            float: right;
+            clear: both;
+            width: 30%;
+            margin-top: 10px;
+            margin-right: 33%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+        </div>
+    </div>
+    <div class="wrapper">
+    <div class="menubar">
+        <ul class="navigation">
+            <li><a href="mainpage">Главная</a></li>
+            <li><a href="requestpage">Заявление на ремонт</a></li>
+            <li><a href="statuspage">Статус заявления</a></li>
+            <li><a href="newspage">Новости</a></li>
+            <li><a href="aboutpage">О нас</a></li>
+        </ul>
+    </div>
+    <div class="slidebar">
+        <div>
+        </div>
+    </div>
+    <div class="content">
+        <h2>Заполните форму для подачи заявки на ремонт:</h2>
+        <form id="requestform" class="requestform">
+            <fieldset>
+            <p>
+                <label for="fullname">Полное имя:</label>
+                <input type="text" id="fullname" name="fullname" maxlength="50" required/>
+            </p>
+            <p>
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" name="phone" maxlength="20" pattern="\+?\d+-?\d+-?\d+-?\d+-?\d+-?\d+" required/>
+            </p>
+            <p>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" maxlength="60" required/>
+            </p>
+            <p>
+                <label for="model">Модель:</label>
+                <input type="text" id="model" name="model" maxlength="15" required/>
+            </p>
+            <p>
+                <label for="serial_number">Серийный номер (S/N):</label>
+                <input type="text" id="serial_number" name="serial_number" minlength="3" maxlength="15" required/>
+            </p>
+            <p>
+                <label for="purchase_date">Дата покупки:</label>
+                <input type="date" id="purchase_date" name="purchase_date" required/>
+            </p>
+            <p>
+                <label for="address">Ваш адрес:</label>
+                <input type="text" id="address" name="address" maxlength="150" required/>
+            </p>
+            <p>
+                <label for="malfunction">Опишите неисправность:</label>
+                <textarea rows="7" cols="38" id="malfunction" name="malfunction" maxlength="1000" required></textarea>
+            </p>
+            <p>
+                <button id="submitbutton" type="submit">Подать заявку на ремонт</button>
+            </p>
+             </fieldset>
+        </form>
+    </div>
+    </div>
+    <script>
+        let requestform = document.getElementById("requestform");            //получение нужных для дальнейшей работы элементов по id
+        let submitbutton = document.getElementById("submitbutton");
+
+        function CreateRequest(e) {                                          //функция для создания запроса на ремонт
+            e.preventDefault();
+            if (requestform.checkValidity()) {                               //проверка правильности введённых данных формы запроса
+                let request = {
+                    id: 0,
+                    fullname: requestform.fullname.value,                    //получение данных из формы и создание объекта запроса
+                    phone: requestform.phone.value,
+                    email: requestform.email.value,
+                    model: requestform.model.value,
+                    serial_number: requestform.serial_number.value,
+                    purchase_date: requestform.purchase_date.value,
+                    address: requestform.address.value,
+                    malfunction: requestform.malfunction.value,
+                    created_at: new Date(),
+                    status: "processing",
+                    service_comment: undefined
+
+                }
+                fetch("/createrequest", { method: "POST", body: JSON.stringify(request), headers: { "Accept": "application/json", "Content-type": "application/json" } })   //отправка созданного запроса на ремонт на сервер
+                    .then(respone => {
+                        if (respone.ok)
+                            return respone.json();
+                        else
+                            return respone.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result => {
+                        alert("Ваш запрос успешно отправлен, номер заявки: " + result.id +" (сохраните номер для дальнейшей проверки статуса заявки)");    //сообщение пользователю id запроса в случае успешной отправки
+                        requestform.reset();
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);      //вывод пользователю сообщения об ошибке в случае неуспешной отправки
+                    })
+                    
+            }
+            else {
+                requestform.reportValidity();                               //вывод пользователю сообщения о неправильно заполненной форме запроса
+            }
+
+        }
+        submitbutton.addEventListener("click", CreateRequest);      //добавление функции отправки запроса к кнопке отправки
+    </script>
+</body>
+</html>

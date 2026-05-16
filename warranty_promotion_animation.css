@@ -1,0 +1,65 @@
+﻿.slidebar div {
+    background-image: url("1.png");
+    background-repeat: round;
+    width: 185px;
+    height: 303px;
+
+    animation-name: warranty_promotion;
+    animation-duration: 48s;
+    animation-iteration-count: infinite;
+    animation-delay: 3s;
+}
+
+@keyframes warranty_promotion {
+    0% {
+        background-image: url("1.png");
+    }
+
+    8% {
+        background-image: url("white.png");
+    }
+
+    16% {
+        background-image: url("2.png");
+    }
+
+    24% {
+        background-image: url("white.png");
+    }
+
+    32% {
+        background-image: url("3.png");
+    }
+
+    40% {
+        background-image: url("white.png");
+    }
+
+    48% {
+        background-image: url("4.png");
+    }
+
+    56% {
+        background-image: url("white.png");
+    }
+
+    64% {
+        background-image: url("5.png");
+    }
+
+    72% {
+        background-image: url("white.png");
+    }
+
+    80% {
+        background-image: url("6.png");
+    }
+
+    88% {
+        background-image: url("white.png");
+    }
+
+    96% {
+        background-image: url("1.png");
+    }
+}

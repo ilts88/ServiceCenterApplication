@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>News page</title>
+    <link rel="stylesheet" type="text/css" href="frame.css" />
+    <link rel="stylesheet" type="text/css" href="warranty_promotion_animation.css" />
+    <style>
+        .news_wrapper{
+            height:100%;
+            overflow:auto;
+        }
+        .news_wrapper small{
+            float:left;
+        }
+        .news_wrapper h3{
+            text-align:center;
+        }
+            .news_wrapper h3, div, p {
+                margin: revert;
+                padding: revert;
+                border: revert;
+            }
+            .news_wrapper div{
+                border-bottom:2px solid black;
+            }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+        </div>
+    </div>
+    <div class="wrapper">
+    <div class="menubar">
+        <ul class="navigation">
+            <li><a href="mainpage">Главная</a></li>
+            <li><a href="requestpage">Заявление на ремонт</a></li>
+            <li><a href="statuspage">Статус заявления</a></li>
+            <li><a href="newspage">Новости</a></li>
+            <li><a href="aboutpage">О нас</a></li>
+        </ul>
+    </div>
+    <div class="slidebar">
+        <div>
+        </div>
+    </div>
+    <div class="content">
+        <div id="news_wrapper" class="news_wrapper"></div>
+    </div>
+    </div>
+    <script>
+        let news_wrapper = document.getElementById("news_wrapper");              //получение по id элемента для отображения публикаций
+
+        function GetAllNews() {                                             //функция для получения всех публикаций
+            fetch("/getallnews", { method: "GET", headers: { "Accept": "application/json" } })     //отправка запроса серверу на получение всех публикаций
+                .then(response => {
+                    if (response.ok)
+                        return response.json();
+                    else
+                        return response.json().then(errormessage => { throw errormessage; });
+                })
+                .then(result => {
+                    if (result.length === 0) {                                 //если запрос успешно выполнен, но полученный массив не содрежит публикаций, пользователю выводится сообщение об отсутствии новостей
+                        let h3 = document.createElement("h3");
+                        h3.textContent = "На данный момент новостей нет";
+                        news_wrapper.appendChild(h3);
+                    }
+                    else {
+                        for (article of result) {                              //иначе выполняется вывод каждой публикации пользователю
+                            let div = document.createElement("div");
+                            let h3 = document.createElement("h3");
+                            let p = document.createElement("p");               //создание элементов для отображения публикации
+                            let small = document.createElement("small");
+
+                            h3.textContent = article.title;                    //ввод данных публикации в элементы
+                            p.textContent = article.content;
+                            small.textContent = new Date(article.created_at).toLocaleDateString();
+                            
+
+                            div.appendChild(small);
+                            div.appendChild(h3);
+                            div.appendChild(p);
+
+                            news_wrapper.appendChild(div);                     //добавление публикации в элемент для отображения публикаций
+                        }
+                    }
+                })
+                .catch(error => {
+                    alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);           //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                })
+        }
+
+        GetAllNews();          //вызов функции получения всех публикаций для отображения публикаций пользователю в момент перехода на данную страницу
+    </script>
+</body>
+</html>

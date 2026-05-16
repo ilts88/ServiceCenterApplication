@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Main page</title>
+    <link rel="stylesheet" type="text/css" href="/frame.css" />
+    <link rel="stylesheet" type="text/css" href="/warranty_promotion_animation.css" />
+    <style>
+        .content h2, form, p {
+            margin: revert;
+            padding: revert;
+            border: revert;
+        }
+        .content h2{
+            text-align:center;
+        }
+        .content form{
+            width:60%;
+            margin-left:20%;
+        }
+        .authentication_form input{
+            float:right;
+            width:60%;
+            margin-right:20%;
+        }
+        .authentication_form button{
+            float:right;
+            width:30%;
+            margin-right:33%;
+            clear:both;
+            margin-top:10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+        </div>
+    </div>
+    <div class="wrapper">
+    <div class="menubar">
+        <ul class="navigation">
+            <li><a href="/mainpage">Главная</a></li>
+            <li><a href="/requestpage">Заявление на ремонт</a></li>
+            <li><a href="/statuspage">Статус заявления</a></li>
+            <li><a href="/newspage">Новости</a></li>
+            <li><a href="/aboutpage">О нас</a></li>
+        </ul>
+    </div>
+    <div class="slidebar">
+        <div>
+        </div>
+    </div>
+    <div class="content">
+        <h2>Для продолжения введите логин и пароль:</h2>
+        <form class="authentication_form" method="post">
+            <fieldset>
+                <p>
+                    <label for="login">Логин:</label>
+                    <input type="text" id="login" name="login" required/>
+                </p>
+                <p>
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required/>
+                </p>
+                <p>
+                    <button type="submit">Отправить</button>
+                </p>
+            </fieldset>
+        </form>
+    </div>
+    </div>
+</body>
+</html>

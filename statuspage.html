@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Status page</title>
+    <link rel="stylesheet" type="text/css" href="frame.css" />
+    <link rel="stylesheet" type="text/css" href="warranty_promotion_animation.css" />
+    <style>
+        .content p {
+            width: 90%;
+            margin-right: 5%;
+            margin-left: 5%;
+            margin-top: 50px;
+            border: 3px solid blue;
+            padding-right: 3%;
+            padding-left: 3%;
+            padding-top: 25px;
+            padding-bottom: 25px;
+        }
+
+        .requestform span {
+            width: 17%;
+            display: inline-block;
+        }
+
+        .requestform input[type="text"] {
+            width: 65%;
+        }
+
+        .requestform button {
+            width: 15%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+        </div>
+    </div>
+    <div class="wrapper">
+    <div class="menubar">
+        <ul class="navigation">
+            <li><a href="mainpage">Главная</a></li>
+            <li><a href="requestpage">Заявление на ремонт</a></li>
+            <li><a href="statuspage">Статус заявления</a></li>
+            <li><a href="newspage">Новости</a></li>
+            <li><a href="aboutpage">О нас</a></li>
+        </ul>
+    </div>
+    <div class="slidebar">
+        <div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="requestform">
+            <form id="idform">
+                <p>
+                    <span>Введите id запроса:</span>
+                    <input type="text" name="requestid" pattern="\d{9}"/>
+                    <button type="submit" id="submitbutton">Отправить</button>
+                </p>
+            </form>
+        </div>
+        <div id="statusinfo" class="statusinfo"></div>
+    </div>
+    </div>
+    <script>
+        let statusinfo = document.getElementById("statusinfo");              //получение нужных для дальнейшей работы элементов по id
+        let idform = document.getElementById("idform");
+        let submitbutton = document.getElementById("submitbutton");
+
+        function GetRequest(e) {                         //функция получения информации о запросе на ремонт
+            e.preventDefault();
+            if (idform.checkValidity()) {                //проверка правильности введённых данных формы ввода id запроса
+                let id = idform.requestid.value;         //получение введённого пользователем id
+                fetch("/getrequeststatus?id=" + id, { method: "GET", headers: { "Accept": "application/json" } })    //отправка серверу запроса на получение информации о запросе на ремонт с указанным id
+                    .then(response => {
+                        if (response.status === 204) {           //если сервер отправил статусный код, сообщающий об отсутствии запроса с указанным id, пользователю выводится соответствующее сообщение
+                            alert("Запрос не найден");
+                            ClearStatusInfo();                   //вызов функции удаления текущей отображаемой информации о состоянии запроса на ремонт
+                        }
+                        else if (response.ok)
+                            return response.json().then(result => {    //если сервер передал информацию о состоянии запроса на ремонт, вызывается функция отображения полученной информации пользователю   
+
+                                ShowRequestStatusInfo(result);
+                            });
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);           //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                        ClearStatusInfo();                            //вызов функции удаления текущей отображаемой информации о состоянии запроса на ремонт
+                    })
+            }
+            else {
+                idform.reportValidity();            //вывод пользователю сообщения о неправильно заполненной форме ввода id запроса
+            }
+        }
+        function ShowRequestStatusInfo(request) {              //функция отображения информации о состоянии запроса на ремонт
+                ClearStatusInfo();                             //вызов функции удаления текущей отображаемой информации о состоянии запроса на ремонт
+                               
+                let p1 = document.createElement("p");          //создание элементов для отображения статуса запроса на ремонт
+                let span1 = document.createElement("span");
+                p1.textContent = "Статус запроса: ";
+                if (request.status === "processing") {                  //производится расшифровка статуса запроса на ремонт для отображения пользователю
+                    span1.textContent = "Ожидает назначения ремонта";   //расшифрованная информация вводится в элемент статуса запроса
+                    span1.setAttribute("style", "color:blue");          //в зависимости от статуса элемент окрашивается в определённый цвет
+                }
+                if (request.status === "appointed") {
+                    span1.textContent = "Ремонт назначен";
+                    span1.setAttribute("style", "color:blue");
+                }
+                if (request.status === "rejected") {
+                    span1.textContent = "Запрос отклонён";
+                    span1.setAttribute("style", "color:red");
+                }
+                if (request.status === "resolved") {
+                    span1.textContent = "Ремонт выполнен";
+                    span1.setAttribute("style", "color:green");
+                }
+
+                p1.appendChild(span1);
+                statusinfo.appendChild(p1);                     //добавление элемента со статусом запроса в панель информации о запросе
+
+                if (request.service_comment!=null)                 //проверка полученной информации на наличие комментария сервисного центра
+                    if (request.service_comment.length > 0) {
+                    p2 = document.createElement("p");              //в случае, если полученная информация содержит комментарий сервисного центра, создаётся элемент для отображения комментария сервисного центра
+                    p2.textContent = "Комментарий сервисного центра: " + request.service_comment;       //ввод в элемент комментария сервисного центра
+                    statusinfo.appendChild(p2);                    //созданный элемент добавляется в панель информации о запросе
+                }
+            
+            
+        }
+        function ClearStatusInfo() {                          //функция удаления текущей отображаемой информации о состоянии запроса на ремонт
+            while (statusinfo.firstChild != undefined) {
+                statusinfo.firstChild.remove();
+            }
+        }
+        submitbutton.addEventListener("click", GetRequest);       //добавление к кнопке "отправить" функции получения информации о запросе на ремонт
+    </script>
+</body>
+</html>

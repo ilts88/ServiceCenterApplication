@@ -1,0 +1,80 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, dl, dt, dd,
+ol, ul, li, form, table, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    min-height: 650px;
+    min-width: 1250px;
+    height: 100vh;
+}
+
+.header {
+    width: 100%;
+    clear: both;
+    height: 10%;
+    background-color: white;
+}
+
+    .header div {
+        background-image: url("LOGO.png");
+        background-repeat: round;
+        height: 65px;
+        width: 130px;
+        margin-left: 45%;
+    }
+
+.menubar {
+    float: left;
+    width: 10%;
+    border-top: 3px solid grey;
+}
+
+.slidebar {
+    float: right;
+    width: 15%;
+    border-top: 3px solid grey;
+}
+
+.content {
+    margin-left: 10%;
+    margin-right: 15%;
+    padding: 3px;
+    width: 75%;
+    height: 100%;
+    background-color: white;
+    border-top: 3px solid grey;
+    border-left: 3px solid grey;
+    border-right: 3px solid grey;
+}
+
+.wrapper {
+    background-color: whitesmoke;
+    height: 90%;
+}
+
+.navigation {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+    .navigation a {
+        display: block;
+        border-bottom: 1px solid grey;
+        padding: 20px;
+        text-decoration: none;
+        color: black;
+    }
+
+        .navigation a:hover {
+            font-weight: bold;
+        }

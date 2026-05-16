@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Admin page</title>
+    <link rel="stylesheet" type="text/css" href="/adminpage/admin_frame.css" />
+    <style>
+        .rules{
+            height:100%;
+        }
+        .text_wrapper {
+            max-height: 70%;
+            overflow: auto;
+            border-bottom: 1px solid grey;
+            padding-left: 3px;
+            background-color: white;
+        }
+            .text_wrapper p {
+                margin: revert;
+                padding: revert;
+                border: revert;
+            }
+        .selector {
+            border-bottom: 1px solid grey;
+        }
+
+            .selector p {
+                margin-left: 5%;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+        .selector_wrapper {
+            float: right;
+            margin-right: 5%;
+        }
+
+        .editpanel {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            z-index: 1;
+            min-width: 1000px;
+            background-color: white;
+            box-shadow: 5px 5px 50px 5px #808080,-5px -5px 50px 5px #808080;
+        }
+
+            .editpanel table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .editpanel tr {
+                border-bottom: 2px solid black;
+            }
+
+            .editpanel td {
+                width: 50%;
+            }
+
+                .editpanel td:first-child {
+                    border-right: 1px solid grey;
+                }
+
+            .editpanel > p {
+                border-bottom: 2px solid black;
+                max-height:60px;
+                overflow:auto;
+            }
+
+            .editpanel div {
+                text-align: center;
+                width: 33%;
+                margin-left: 30%;
+                margin-top: 10px;
+                padding: 3px;
+                border: 3px solid blue;
+            }
+
+            .editpanel button:first-child {
+                margin-left: 35%;
+            }
+
+            .editpanel button {
+                margin: 10px;
+                width: 10%;
+            }
+
+        .requeststable_wrapper {
+            height: 92%;
+            overflow: auto;
+        }
+
+        .requeststable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .requeststable tr {
+                border-bottom: 2px solid black;
+            }
+
+            .requeststable td,th {
+                border-right: 1px solid grey;
+                padding-top: 3px;
+                padding-bottom: 3px;
+            }
+
+                .requeststable td:last-of-type {
+                    border-right: none;
+                }
+
+                .requeststable th:last-of-type{
+                    border-right:none;
+                }
+
+            .requeststable button {
+                margin: 3px;
+            }
+
+        .deletealloldbutton {
+            float: right;
+            width: 30%;
+            margin-right: 10%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+        </div>
+    </div>
+    <div class="wrapper">
+    <div class="menubar">
+        <ul class="navigation">
+            <li><a href="/adminpage">Управление запросами</a></li>
+            <li><a href="/adminpage/newspage">Управление новостями</a></li>
+        </ul>
+    </div>
+    <div class="rules">
+        <div class="text_wrapper">
+            <p>Вы вошли в систему управления запросами на ремонт. Для того, чтобы увидеть детальную информацию о запросе, нажмите на кнопку «открыть» напротив нужного запроса. В открывшемся меню отобразиться вся имеющаяся информация о запросе, а также интерфейс для изменения статуса запроса и добавления комментария сервисного центра.</p>
+            <p>Вы должны своевременно назначать ремонт для новых заявок и выполнять его в установленный срок. Напоминаем Вам, что, согласно правилам нашей компании, ремонт должен быть назначен в течение 7 дней с момента создания запроса и выполнен в течение 30 дней с момента создания запроса. За 2 дня до указанных сроков система выдаст Вам предупреждение, подсветив красным цветом время создания запроса, у которого скоро истечёт установленный правилами срок на назначение соответствующего статуса. Если Вы просрочите назначение ремонта или его выполнение, в качестве предупреждения система высветит красным цветом все поля запроса, у которого истёк срок на назначение статуса.</p>
+            <p>Во время смены статуса запроса Вам необходимо добавить комментарий сервисного центра. При назначении ремонта Вы должны указать в нём дату и время проведения ремонта, а также адрес нашего ремонтного пункта, по которому будет производиться ремонт. В случае, если требуется отремонтировать кондиционер, укажите, что ремонт будет произведён на дому у клиента (не пишите в комментарии сам адрес клиента или любую другую персональную информацию из-за соображений конфиденциальности, так как она может быть получена злоумышленниками путём перебора id запросов). При завершении ремонта Вы должны указать дату и место выполнения ремонта, а также кратко описать суть возникшей поломки и способ её устранения. </p>
+            <p>Системой предусмотрена возможность отказа в обслуживании, но Вы должны прибегать к ней максимально редко. Причиной отказа в обслуживании обычно является некорректно сформулированный запрос, в котором некорректно заполнены 2 и более поля (например, неясно указана неисправность и указан несуществующий серийный номер). В случае, если некорректно указано только одно поле, Вы должны связаться с составителем запроса и уточнить у него информацию. Если это не удалось, при отказе вежливо предложите клиенту подать новый запрос, а также укажите ошибки, из-за которых запрос пришлось отклонить.</p>
+            <p>Согласно правилам, каждый запрос должен храниться в системе как минимум 180 дней. По истечении этого периода система предложит удалить запросы со статусом «завершён» и «отклонён», сделав доступной для нажатия кнопку «удалить» напротив соответствующих запросов. Также в системе есть возможность удалить сразу все соответствующие правилам удаления запросы. Для этого нужно нажать на кнопку «удалить все старые запросы».</p>
+         </div>
+        </div>
+    <div class="content">
+        <form class="selector" id="selector">
+            <p>
+                <span>Сортировать по:</span>
+                <input type="radio" name="order_by" id="ASC" value="ASC" checked />
+                <span>возрастанию</span>
+                <input type="radio" name="order_by" id="DESC" value="DESC" />
+                <span>убыванию</span>
+                <span class="selector_wrapper">
+                <span >Выбрать:</span>
+                <select name="select">
+                    <option value="all" selected>Все</option>
+                    <option value="processing">Ожидающие обработки</option>
+                    <option value="appointed">Ремонт назначен</option>
+                    <option value="rejected">Отклонённые</option>
+                    <option value="resolved">Завершённые</option>
+                </select>
+                <input type="button" value="Применить" id="submitbutton" />
+                </span>
+            </p>
+         </form>
+        <div class="requeststable_wrapper">
+            <table class="requeststable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>модель</th>
+                        <th>S/N</th>
+                        <th>запрос создан</th>
+                        <th>неисправность</th>
+                        <th>статус</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+
+            <button id="deletealloldbutton" class="deletealloldbutton">Удалить все старые запросы</button>
+        </div>
+    </div>
+    </div>
+    <script>
+        const DEADLINE_FOR_REPAIR_APPOINTMENT = 7;                                //создание констант для работы функций, предупреждающих об истечении срока на назначение статуса запроса и делающих доступным удаление запросов
+        const DEADLINE_FOR_REQUEST_RESOLVING = 30;
+        const DAYS_BEFORE_DEADLINE_FOR_REMINDER = 2;
+        const MONTHS_REQUIRED_BEFORE_REQUEST_DELETING = 6;
+        let tbody = document.getElementById("tbody");                             //получение нужных для дальнейшей работы элементов по id
+        let selector = document.getElementById("selector");
+        let submitbutton = document.getElementById("submitbutton");
+        let deletealloldbutton = document.getElementById("deletealloldbutton");
+        let current_status = "all";                                               //создание и инициализация переменных текущего выбранного статуса и текущего открытого запроса
+        let current_request = undefined;
+
+        function GetRequests(e) {                                                 //функция для получения всех запросов с выбранным статусом
+            while (tbody.firstChild != undefined)
+                tbody.firstChild.remove();                                        //очищение таблицы запросов в случае повторного вызова функции
+
+            let order_by_param = selector.order_by.value;                         //получение параметров статуса и сортировки, выбранных пользователем
+            
+            let select = selector.select[selector.select.selectedIndex].value;
+            current_status = select;
+            
+            fetch("/adminpage/getrequests?order_by=" + order_by_param + "&select=" + select, { method: "GET", headers: { "Accept": "application/json" } })     //отправка запроса серверу на получение запросов на ремонт с указанными пользователем параметрами
+                .then(response => {
+                    if (response.ok)
+                        return response.json();
+                    else
+                        return response.json().then(errormessage => { throw errormessage; });
+                })
+                .then(result => {
+                    for (request of result)           
+                        CreateRow(request);                          //вызов функции добавления запроса в таблицу для каждого полученного запроса
+                })
+                .catch(error => {
+                    alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);    //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                })
+        }
+        function CreateRow(request) {                           //функция добавления запроса на ремонт в таблицу запросов
+            let tr = document.createElement("tr");
+            let td1 = document.createElement("td");
+            let td2 = document.createElement("td");
+            let td3 = document.createElement("td");             //создание элементов строки таблицы
+            let td4 = document.createElement("td");
+            let td5 = document.createElement("td");
+            let td6 = document.createElement("td");
+            td1.textContent = request.id;
+            td2.textContent = request.model;                    //вставка данных запроса в элементы
+            td3.textContent = request.serial_number;
+            td4.textContent = request.created_at;
+
+            if (request.malfunction.length > 55) {
+                td5.textContent = request.malfunction.substring(0, 54) + "...";          //у графы "описание неисправности" большая допустимая длина, поэтому в таблицу помещается только начало описания, а остальная его часть усекается
+            }
+            else {
+                td5.textContent = request.malfunction;
+            }
+            td6.textContent = GetStatusDecription(request.status);
+
+            tr.appendChild(td1);                     //добавление ячеек в строку таблицы
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+            tr.appendChild(td5);
+            tr.appendChild(td6);
+            tr.setAttribute("id", request.id);                    //задание для строки id для дальнейшей работы с создаваемым запросом
+            let openbutton = document.createElement("button");
+            openbutton.addEventListener("click", () => OpenElement(request.id));  //создание кнопки открытия запроса и добавление функции открытия запроса по id
+            openbutton.textContent = "открыть";
+
+            let deletebutton = document.createElement("button");   //создание кнопки удаления запроса
+            deletebutton.textContent = "удалить";
+             
+            tr.appendChild(openbutton);
+            tr.appendChild(deletebutton);
+            tbody.appendChild(tr);                           //добавление созданной строки в таблицу
+
+            SetRedRowStatus(request);                        //вызов функции для создания предупреждения об истечении срока на смену статуса
+            SetDeleteButtonStatus(request);                  //вызов функции для установки возможности удаления запроса
+        }
+        function OpenElement(id) {                            //функция для открытия запроса по id
+            fetch("/adminpage/getrequestbyid?id=" + id, { method: "GET", headers: { "Accept": "application/json" } })  //отправка запроса серверу для получения запроса на ремонт с выбранным id
+                .then(response => {
+                    if (response.ok)
+                        return response.json();
+                    else
+                        return response.json().then(errormessage => { throw errormessage; });
+                })
+                .then(result => {
+                    current_request = result;                   //присвоение переменной текущего открытого запроса данных полученного запроса для дальнейшей работы
+                    CreateEditPanel();                          //вызов функции создания панели редактирования запроса
+                })
+                .catch(error => {
+                    alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);        //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                })
+        }
+        function CreateEditPanel() {                               //функция создания панели редактирования запроса на ремонт
+            let EditPanel = document.createElement("div");
+            EditPanel.setAttribute("id", "editpanel");
+            EditPanel.setAttribute("class", "editpanel");          //создание элемента панели редактирования запроса и присвоение ему соответствующих id и class
+            let table = document.createElement("table");
+            let tbody = document.createElement("tbody");           //создание внутренних элементов панели редактирования запроса
+            let tr1 = document.createElement("tr");
+            let td1_1 = document.createElement("td");
+            let td1_2 = document.createElement("td");
+            let tr2 = document.createElement("tr");
+            let td2_1 = document.createElement("td");
+            let td2_2 = document.createElement("td");
+            let tr3 = document.createElement("tr");
+            let td3_1 = document.createElement("td");
+            let td3_2 = document.createElement("td");
+            let tr4 = document.createElement("tr");
+            let td4_1 = document.createElement("td");
+            let td4_2 = document.createElement("td");
+            let p1 = document.createElement("p");
+            let p2 = document.createElement("p");
+            let p3 = document.createElement("p");
+            let p4 = document.createElement("p");
+
+            let h3_1 = document.createElement("h3");
+            let form = document.createElement("form");
+            let f_p1 = document.createElement("p");
+            let span1 = document.createElement("span");
+            let f_p2 = document.createElement("p");
+            let span2 = document.createElement("span");
+            let f_p3 = document.createElement("p");
+            let span3 = document.createElement("span");
+            let radio1 = document.createElement("input");
+            let radio2 = document.createElement("input");
+            let radio3 = document.createElement("input");
+
+            let h3_2 = document.createElement("h3");
+            let f_p4 = document.createElement("p");
+            let textarea = document.createElement("textarea");
+
+            let f_p5 = document.createElement("p");
+            let save_button = document.createElement("button");
+            let reset_button = document.createElement("button");
+
+            let div1 = document.createElement("div");
+            let div2 = document.createElement("div");
+
+            td1_1.textContent ="id: " + current_request.id;                                     //вставка данных текущего открытого запроса в элементы панели редактирования запроса
+            td1_2.textContent = "запрос создан: " + current_request.created_at;
+            td2_1.textContent = "модель: " + current_request.model;
+            td2_2.textContent = "серийный номер: " + current_request.serial_number;
+            td3_1.textContent = "имя клиента: " + current_request.fullname;
+            td3_2.textContent = "дата покупки: " + current_request.purchase_date;
+            td4_1.textContent = "телефон: " + current_request.phone;
+            td4_2.textContent = "email: " + current_request.email;
+            p1.textContent = "адрес: " + current_request.address;
+            p2.textContent = "описание неисправности: " + current_request.malfunction;
+            p3.textContent = "статус: " + GetStatusDecription(current_request.status);
+            if (current_request.service_comment === null) {
+                p4.textContent = "текущий комментарий сервисного центра: ";
+            }
+            else {
+                p4.textContent = "текущий комментарий сервисного центра: " + current_request.service_comment;
+            }
+            
+
+            h3_1.textContent = "Измените статус запроса на:";   
+            form.setAttribute("id", "editform");                 //установка id для интерфейса изменения запроса
+            span1.textContent = "Ремонт назначен";
+            radio1.setAttribute("type", "radio");                //создание надписей и установка атрибутов для элементов интерфейса изменения запроса
+            radio1.setAttribute("name", "status");
+            radio1.setAttribute("value", "appointed");
+            radio1.setAttribute("checked", "");
+            span2.textContent = "Запрос отклонён";
+            radio2.setAttribute("type", "radio");
+            radio2.setAttribute("name", "status");
+            radio2.setAttribute("value", "rejected");
+            span3.textContent = "Ремонт завершён";
+            radio3.setAttribute("type", "radio");
+            radio3.setAttribute("name", "status");
+            radio3.setAttribute("value", "resolved");
+
+            h3_2.textContent = "Добавьте комментарий сервисного центра:";
+            textarea.setAttribute("name", "service_comment");
+            textarea.setAttribute("rows", "7");
+            textarea.setAttribute("cols", "30");
+            textarea.setAttribute("maxlength", "350");
+            textarea.setAttribute("required", "");
+
+            save_button.textContent = "Сохранить";
+            reset_button.textContent = "Сбросить";
+
+            save_button.addEventListener("click", SaveChanges);                //добавление к кнопке "сохранить" функции сохранения изменений
+            reset_button.addEventListener("click", ResetChanges);              //добавление к кнопке "сбросить" функции сброса изменений
+
+            tr1.appendChild(td1_1);                                         //добавление всех созданных элементов в панель редактирования запроса на ремонт
+            tr1.appendChild(td1_2);
+            tr2.appendChild(td2_1);
+            tr2.appendChild(td2_2);
+            tr3.appendChild(td3_1);
+            tr3.appendChild(td3_2);
+            tr4.appendChild(td4_1);
+            tr4.appendChild(td4_2);
+
+            f_p1.appendChild(span1);
+            f_p1.appendChild(radio1);
+            f_p2.appendChild(span2);
+            f_p2.appendChild(radio2);
+            f_p3.appendChild(span3);
+            f_p3.appendChild(radio3);
+            f_p4.appendChild(textarea);
+            f_p5.appendChild(save_button);
+            f_p5.appendChild(reset_button);
+
+            div1.appendChild(h3_1);
+            div1.appendChild(f_p1);
+            div1.appendChild(f_p2);
+            div1.appendChild(f_p3);
+            div2.appendChild(h3_2);
+            div2.appendChild(f_p4);
+
+            form.appendChild(div1);
+            form.appendChild(div2);
+            form.appendChild(f_p5);
+
+            tbody.appendChild(tr1);
+            tbody.appendChild(tr2);
+            tbody.appendChild(tr3);
+            tbody.appendChild(tr4);
+            table.appendChild(tbody);
+
+            EditPanel.appendChild(table);
+            EditPanel.appendChild(p1);
+            EditPanel.appendChild(p2);
+            EditPanel.appendChild(p3);
+            EditPanel.appendChild(p4);
+            EditPanel.appendChild(form);
+            document.body.appendChild(EditPanel);           //добавление панели редактирования запроса на ремонт на страницу 
+        }
+
+        function SaveChanges(e) {                           //функция сохранения изменений, сделанных в панели редактирования запроса на ремонт
+            e.preventDefault();
+            let editform = document.getElementById("editform");        //получение по id элемента интерфейса изменения запроса
+
+            if (editform.checkValidity()) {                            //проверка правильности заполнения формы интерфейса
+                let status = editform.status.value;
+                let service_comment = editform.service_comment.value;   //получение нового статуса запроса и введённого комментария сервисного центра
+
+                current_request.status = status;                        //присвоение свойствам объекта текущего открытого запроса новых значений статуса и комментария
+                current_request.service_comment = service_comment;
+
+                fetch("/adminpage/updaterequest", { method: "PUT", body: JSON.stringify(current_request), headers: { "Accept": "application/json", "Content-type": "application/json" } })    //отправка серверу запроса на обновление запроса на ремонт с данными текущего открытого запроса
+                    .then(response => {
+                        if (response.ok)
+                            return response.json();
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result => {
+                        let request = document.getElementById(result.id);                         //после получения ответа от сервера с данными изменённого запроса находим по id элемент строки изменённого запроса
+                        if (result.status === current_status || current_status === "all") {       //если статус изменённого запроса равен текущему выбранному статусу, а также если выбрано отображение всех запросов, производим изменение данных запроса в таблице
+                            let td6 = request.getElementsByTagName("td")[5];
+                            td6.textContent = GetStatusDecription(result.status);                 //устанавливаем новое значение статуса
+                            SetRedRowStatus(result);                                              //для оценки изменений повторно вызываем функцию создания предупреждения об истечении срока на смену статуса и функцию установки возможности удаления запроса
+                            SetDeleteButtonStatus(result);                                        
+                        }
+                        else {
+                            tbody.removeChild(request);                         //если изменённый запрос не соответствует текущим параметрам отображения запросов, то он удаляется из таблицы
+                        }
+                        current_request = undefined;                              //после совершения изменений сбрасываем переменную текущего выбранного запроса
+                        let editpanel = document.getElementById("editpanel");
+                        document.body.removeChild(editpanel);                    //находим по id элемент панели редактирования и удаляем его
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);   //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                    })
+            }
+            else {
+                editform.reportValidity();              //вывод пользователю сообщения о неправильно заполненной форме интерфейса
+            }
+        }
+        function ResetChanges(e) {                                    //функция сброса изменений, сделанных в панели редактирования запроса на ремонт
+            e.preventDefault();
+            current_request = undefined;                              //сбрасывание переменной текущего выбранного запроса
+            let editpanel = document.getElementById("editpanel");     //получение по id элемента панели редактирования
+            document.body.removeChild(editpanel);                     //удаление панели редактирования
+        }
+
+        function SetRedRowStatus(request) {                          //функция для создания предупреждения об истечении срока на смену статуса запроса
+            let tr = document.getElementById(request.id);            //получение по id элемента строки проверяемого запроса
+            let td4 = tr.getElementsByTagName("td")[3];              //получение по имени тега и порядковому номеру ячейки с временем создания запроса
+
+            let date_created_at = new Date(request.created_at);                                             //создание объекта Date на основе времени создания запроса для его оценки
+            let time_passed_since_date_of_creation = Math.abs(new Date()) - Math.abs(date_created_at);      //вычисление в миллисекундах времени, прошедшего с создания запроса до текущего момента 
+            let date_time_passed_since_date_of_creation = new Date(time_passed_since_date_of_creation);     //создание нового объекта Date на основе вычисленного времени (этот объект указывает на время, которое было вычислено путём прибавления к нулевой точке отсчёта времени периода, равного периоду между созданием запроса и текущим моментом времени)
+            let date_for_repair_appointment_deadline_comparing = new Date(0);                               //создание объектов Date на основе нулевой точки отсчёта времени для дальнейшего сравнения периода, прошедшего с момента создания запроса, с установленными константами периодами (все сравнения будут проводиться относительно нулевой точки отсчёта времени)
+            let date_for_request_resolving_deadline_comparing = new Date(0);
+            let date_for_repair_appointment_deadline_reminder_comparing = new Date(0);
+            let date_for_request_resolving_deadline_reminder_comparing = new Date(0);
+
+            date_for_repair_appointment_deadline_comparing.setDate(DEADLINE_FOR_REPAIR_APPOINTMENT + 1);    //установка объектам Date, созданным для сравнения времени, периодов, заданных в константах (таким образом каждый объект будет указывать на время, вычисленное путём прибавления к нулевой точке отсчёта времени количества дней, указанных в константах)
+            date_for_request_resolving_deadline_comparing.setDate(DEADLINE_FOR_REQUEST_RESOLVING + 1);      //поскольку отсчёт начинается с первого дня календаря, для точного соответствия к каждой константе прибавляется единица
+            date_for_repair_appointment_deadline_reminder_comparing.setDate(DEADLINE_FOR_REPAIR_APPOINTMENT - DAYS_BEFORE_DEADLINE_FOR_REMINDER + 1);
+            date_for_request_resolving_deadline_reminder_comparing.setDate(DEADLINE_FOR_REQUEST_RESOLVING - DAYS_BEFORE_DEADLINE_FOR_REMINDER + 1);
+
+            
+            if (date_time_passed_since_date_of_creation > date_for_repair_appointment_deadline_comparing && request.status === "processing")   //если у запроса со статусом "ожидает обработки" времени с момента создания прошло больше, чем указано в константе дедлайна, то вся строка запроса выделяется красным цветом
+                tr.setAttribute("style", "color:red");
+            else if (date_time_passed_since_date_of_creation > date_for_repair_appointment_deadline_reminder_comparing && request.status === "processing") {
+                if (tr.hasAttribute("style"))
+                    tr.removeAttribute("style");                     //если у запроса со статусом "ожидает обработки" времени с момента создания прошло меньше, чем в константе дедлайна, но времени до дедлайна осталось меньше периода предупреждения о дедлайне, то при наличии выделения всей строки красным цветом оно удаляется
+                td4.setAttribute("style", "color:red");              //и добавляется выделение красным цветом ячейки с временем создания запроса
+            }
+            else if (request.status === "processing") {              //если у запроса со статусом "ожидает обработки" времени с момента создания прошло меньше, чем в константе дедлайна, и времени до дедлайна осталось больше периода предупреждения о дедлайне, то выделение красным цветом всей строки или ячейки с временем создания удаляется при его наличии
+                if (tr.hasAttribute("style"))
+                    tr.removeAttribute("style");
+                if (td4.hasAttribute("style"))
+                    td4.removeAttribute("style");
+            }
+                
+
+            if (date_time_passed_since_date_of_creation > date_for_request_resolving_deadline_comparing && request.status === "appointed")    //к запросам со статусом "ремонт назначен" применяется логика, аналогичная логике обработки запросов со статусом "ожидает обработки"
+                tr.setAttribute("style", "color:red");
+            else if (date_time_passed_since_date_of_creation > date_for_request_resolving_deadline_reminder_comparing && request.status === "appointed") {
+                if (tr.hasAttribute("style"))
+                    tr.removeAttribute("style");
+                td4.setAttribute("style", "color:red");
+            }
+            else if (request.status === "appointed") {
+                if (tr.hasAttribute("style"))
+                    tr.removeAttribute("style");
+                if (td4.hasAttribute("style"))
+                    td4.removeAttribute("style");
+            }
+
+            if (request.status === "resolved" || request.status === "rejected") {        //для запросов со статусами "завершён" и "отклонён" нет предупреждений об истечении срока на замену статуса
+                if (tr.hasAttribute("style"))                                            //поэтому такие запросы проверяются на наличие выделения красным всей строки или ячейки с временем создания
+                    tr.removeAttribute("style");                                         //при обнаружении выделения оно удаляется
+                if (td4.hasAttribute("style"))
+                    td4.removeAttribute("style");
+            }
+        }
+
+        function SetDeleteButtonStatus(request) {                             //функция установки возможности удаления запроса
+            let tr = document.getElementById(request.id);
+            let deletebutton = tr.getElementsByTagName("button")[1];          //получение по тегу и порядковому номеру кнопки удаления запроса
+
+            let date_created_at = new Date(request.created_at);      // создание объекта Date на основе времени создания запроса
+            date_created_at.setHours(0);                             // Для соответсвия функции Datediff() в MySQL часы,минуты и секунды обнуляются, поскольку функция Datediff() учитывает только количество пройденных дней
+            date_created_at.setMinutes(0);
+            date_created_at.setSeconds(0);
+            let time_passed_since_date_of_creation = Math.abs(new Date()) - Math.abs(date_created_at);       //получение в миллисекундах времени с момента создания запроса до текущего момента
+            let date_time_passed_since_date_of_creation = new Date(time_passed_since_date_of_creation);      //создание нового объекта Date на основе полученного времени (этот объект будет указывать на время, вычисленное путём прибавления к нулевой точке отсчёта времени периода, равного периоду с момента создания запроса до текущего момента времени)
+            let date_for_requirement_for_deleting_comparing = new Date(0);                                   //создание на основе нулевой точки времени объекта Date для дальнейшего сравнения
+            date_for_requirement_for_deleting_comparing.setMonth(MONTHS_REQUIRED_BEFORE_REQUEST_DELETING);   //установка созданному объекту для сравнения значения месяца, указанного в константе (таким образом объект будет указывать на время, вычисленное путём прибавления к нулевой точке отсчёта времени количества месяцев, указанных в константе)
+            
+            if (date_time_passed_since_date_of_creation > date_for_requirement_for_deleting_comparing && (request.status === "resolved" || request.status === "rejected")) {     //если времени с момента создания запроса прошло больше, чем указано в константе, и статус запроса "завершён" или "отклонён", то запрос делается доступным для удаления
+                if (deletebutton.hasAttribute("disabled"))
+                    deletebutton.removeAttribute("disabled");                                  //если ранее у кнопки удаления был установлен атрибут, делающий её недоступной для нажатия, то он удаляется     
+                deletebutton.addEventListener("click", () => DeleteRequest(request.id));       //добавление к кнопке удаления функции удаления запроса по id
+            }
+            else
+                deletebutton.setAttribute("disabled", "");                                     //если запрос не соответствует критериям доступности для удаления, то кнопка удаления делается недоступной для нажатия путём добавления атрибута
+        }
+
+        function DeleteRequest(id) {                                               //функция удаления запроса по id
+            const confirmation = confirm("Удалить запрос с id "+id+"?");           //вывод пользователю сообщения с вопросом об удалении запроса и получение от пользователя подтверждения или отказа
+            if (confirmation === true) {                                           //в случае подтверждения выполняется удаление
+                fetch("/adminpage/deleterequest?id=" + id, { method: "DELETE", headers: { "Accept": "application/json" } })      //отправка серверу запроса на удаление запроса на ремонт с указанным id
+                    .then(response => {
+                        if (response.ok)
+                            return response.json();
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result_id => {                                         //в случае успешного удаления сервер передаёт id удалённого запроса
+                        
+                        let request = document.getElementById(result_id);        //получение по id элемента строки удалённого запроса      
+                        tbody.removeChild(request);                              //удаление запроса из таблицы
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);        //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                    })
+            }
+            
+        }
+
+        function DeleteAllOldRequest(e) {                //функция удаления всех запросов, соответствующих критериям удаления (запросов, у которых времени с момента создания прошло больше, чем установлено правилами, и статус которых "завершён" или "отклонён")
+            e.preventDefault();
+            let confirmation = confirm("Вы уверены, что хотите удалить все старые запросы?");        //вывод пользователю сообщения с вопросом об удалении всех старых запросов и получение подверждения или отказа от пользователя
+            if (confirmation === true) {                                                             //в случае подтверждения выполняется удаление запросов
+                fetch("/adminpage/deletealloldrequests", { method: "DELETE", headers: { "Accept": "application/json" } })     //отправка запроса серверу на удаление всех старых запросов
+                    .then(response => {
+                        if (response.ok)
+                            return response.json();
+                        else
+                            return response.json().then(errormessage => { throw errormessage; });
+                    })
+                    .then(result => {                                                       //в случае успешного удаления сервер возвращает массив, содержащий id всех удалённых запросов
+                        
+                        if (result.length === 0)                                            //если длина массива равна нулю, то пользователю выводится сообщение об отсутствии удалённых запросов
+                            alert("Ни один запрос не был удалён");
+                        else {                                                              //если длина массива не равна нулю, то производится удаление всех запросов из таблицы
+                            let count_of_deleted_requests = result.length;
+                            for (id of result) {                                            
+                                let request = document.getElementById(id);
+                                if (request != undefined)                                   //перед удалением запроса производится проверка, был ли запрос найден по id, поскольку если пользователь в момент удаления выбрал отображение запросов по определённому статусу, то часть удалённых запросов может не отображаться в таблице
+                                tbody.removeChild(request);
+                            }
+                            alert("Было удалено " + count_of_deleted_requests + " запросов");     //вывод пользователю сообщения об общем количестве удалённых запросов
+                        }
+                    })
+                    .catch(error => {
+                        alert("Во время выполнения запроса произошла ошибка, информация об ошибке: " + error);                //вывод пользователю сообщения об ошибке в случае неуспешного выполнения запроса
+                    })
+            }
+        }
+        function GetStatusDecription(status) {              //функция расшифровки статуса запроса для отображения пользователю
+            if (status === "processing")
+                return "ожидает обработки";
+            else if (status === "appointed")
+                return "ремонт назначен";
+            else if (status === "rejected")
+                return "отклонён";
+            else if (status === "resolved")
+                return "завершён";
+            else
+                return "ошибка";
+        }
+        deletealloldbutton.addEventListener("click", DeleteAllOldRequest);            //добавление к кнопке удаления всех старых запросов функции удаления всех старых запросов
+        submitbutton.addEventListener("click", GetRequests);                          //добавление к кнопке "применить" функции получения всех запросов с выбранным статусом
+        GetRequests();                                                                //вызов функции получения всех запросов с выбранным статусом для отображения запросов пользователю в момент перехода на данную страницу
+    </script>
+</body>
+</html>
